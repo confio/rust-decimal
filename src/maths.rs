@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use num_traits::pow::Pow;
+use std::ops::Div;
 
 // Tolerance for inaccuracies when calculating exp
 const EXP_TOLERANCE: Decimal = Decimal::from_parts(2, 0, 0, false, 7);
@@ -183,9 +184,9 @@ impl MathematicalOps for Decimal {
         let mut term = *self;
         let mut result = self.checked_add(Decimal::ONE)?;
 
-        for factorial in FACTORIAL.iter().skip(2) {
-            term = self.checked_mul(term)?;
-            let next = result + (term / factorial);
+        for n in 2..=30 {
+            term = self.checked_mul(term)?.div(Decimal::new(n, 0));
+            let next = result + term;
             let diff = (next - result).abs();
             result = next;
             if diff <= tolerance {
